@@ -1,0 +1,9 @@
+var
+  cadeia:C;
+
+prog Jota;
+inicio
+  lercad(C);
+  impcad(".");
+  impcad(C);
+fim.

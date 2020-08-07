@@ -1,0 +1,31 @@
+var
+  inteiro:S;
+
+rotina
+  func FSomar(inteiro:N):inteiro
+  inicio
+    se N=0
+    entao retorne 0;
+    senao retorne N+FSomar(N-1);
+    fimse;
+  fim;
+
+  proc PSomar(inteiro:N; ponteiro:S)
+  var
+    inteiro:R;
+  inicio
+    se N=0
+    entao valor(S)<-0;
+    senao PSomar(N-1, ender(R));
+          valor(S)<-N+R;
+    fimse;
+  fim;
+
+
+prog Prog;
+inicio
+  PSomar(4, ender(S));
+  impint(S);
+  impcad(" e ");
+  impint(FSomar(4));
+fim.

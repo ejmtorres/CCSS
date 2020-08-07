@@ -1,0 +1,44 @@
+tipo
+  TVet=vetor[3, 3] de inteiro;
+
+rotina
+
+proc Vetor()
+var
+  inteiro:I, J, K;
+  TVet:Vet;
+inicio
+  K<-0;
+  I<-0;
+  enquanto I<3 faca
+    J<-0;
+    enquanto J<3 faca
+      Vet[I, J]<-K;
+      K<-K+1;
+      J<-J+1;
+    fimenq;
+    I<-I+1;
+  fimenq;
+
+  I<-0;
+  enquanto I<3 faca
+    J<-0;
+    enquanto J<3 faca
+      impcad("Vet[");
+      impint(I);
+      impcad(",");
+      impint(J);
+      impcad("] = ");
+      impint(Vet[I, J]);
+      impcad(" ");
+      J<-J+1;
+    fimenq;
+    impcad("\n");
+    I<-I+1;
+  fimenq;
+fim;
+
+prog Prog;
+inicio
+  Vetor;
+fim.

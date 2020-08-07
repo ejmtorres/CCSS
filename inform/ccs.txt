@@ -1,0 +1,140 @@
+Compilador C Super Simples (CCSS)
+
+Introdução
+
+	CCSS é um compilador freeware, de propósito acadêmico, para a linguagem C mas muito 
+simples e incompleto.
+
+	Em 1985, ainda como aluno do curso de Tecnólogo em Processamento de Dados pela 
+Universidade Federal do Ceará, ao adentrar em uma livraria que ficava no Campus do Pici, 
+deparei-me com um livro do Professor Setzer, sobre Compiladores, o qual me deixou bastante 
+empolgado. Comprei-o, é claro!
+
+	A partir daí, comecei a estudar por conta própria diversos assuntos relacionados com 
+Compiladores, tais como Teoria de Autômatos, Linguagens Formais, Linguagem C, Linguagem de 
+Montagem, e muito, muito mesmo a respeito de Compiladores.
+
+	Surgiu então um primeiro Compilador, o XODO, feito em Pascal, rodando em um Apple Plus
+com o Sistema Operacional (OS) chamado CP/M.  Pense na demora para compilar o programa! A 
+linguagem de saída ainda era uma linguagem abstrata (do tipo pseudo assembly).
+
+	Depois veio outra versão agora em C, para o IBM-PC rodando o velho MS-DOS. Gerava 
+macros em linguagem de montagem, para uma máquina do tipo pilha. Esta máquina baseava-se no 
+livro do Professor Kowaltowski.
+
+	Uma outra versão, também em C, gerou código para o 8088. Utilizei as técnicas do famoso 
+"Livro do Dragão" do Aho e Ullman.
+
+	Em 1998, retomei o projeto que estava parado a anos, e resolvi reescrever o compilador 
+totalmente, do início, mas agora na linguagem C++.
+
+	Agora, em 2004, resolvi fazer o compilador usar melhor os registradores de 32 bits. 
+Antes, so foram utilizado os registradores de 16 bits. O tipo inteiro, agora com 32 bits, 
+abrange uma faixa bem maior de valores.
+
+	Esta versão particular foi reescrita na linguagem C para facilitar um futuro porte para 
+outros sistemas operacionais, tais como Linux. A sintaxe foi ligeiramente modificada para 
+parecer um pouco mais com a linguagem C.
+
+	Anos depois, uma versão para Linux foi, de fato, desenvolvida mas para 32-bits. Mais 
+tarde, tentei migrar para 64-bits no Linux mas houve um problema. Parece que em 64-bits, os 
+registradores de segumento de pilha (ss) e de dados (ds) não apotam para o mesmo endereço,
+causando complicações que não foram devidamente resolvidas.
+
+	Em 2020, resolvi tentar portar o XODO para 64-bits mais uma vez, mas os problemas
+citados persistiram. No entanto, uma versão em 32-bits rodando em Linux de 64-bits 
+funcionou. O CCSS é baseado nessa versão.
+
+	Espero que esse software possa ser usado com dois objetivos principais : primeiro, como 
+uma linguagem de programação para alunos iniciantes em Informática, em cursos que envolvam 
+algoritmos, e, segundo, como um compilador cujos programas-fontes possam ser estudados por 
+alunos em um curso de Construção de Compiladores.
+
+A Linguagem do CCSS (Compilador C Super Simples)
+
+	Características principais:
+
+	- linguagem do gênero ALGOL (ALGOL-like)
+	- algumas palavras reservadas da linguagem C padrão
+	- tipos básicos : int e char
+	- mecanismos de estruturação : vetor (array) multi-dimensional	
+	- procedimentos e funções
+	- parâmetros passados por valor
+	- emulação de parâmetros passados por referência através do uso de ponteiros
+	- modulos compilados separadamente
+
+	Sintaxe:
+
+	Abaixo segue uma descrição da sintaxe da linguagem CCSS, utilizando BNF estendida. Os 
+elementos entre aspas são todos tokens reconhecidos pelo parser (analisador léxico).  Não 
+confundir com os meta-caracteres utilizados na descrição sintática propriamente dita, tais como 
+'(', ')', '[', ']', etc.
+
+	Os elementos opcionais estão envoltos por '[' e ']' no inicio e no fim, respectivamente. Já 
+os caracteres '{' e '}' são utilizados para representar zero ou mais repetições dos elementos por 
+eles delimitados. O símbolo '|' é ulilizado para indicar uma escolha entre opções.
+
+	Os identificadores são representados pelo símbolo "id", sendo Num01, Soma, Total, etc, 
+exemplos de identificadores válidos, enquanto "ni" representa qualquer número inteiro, 
+como 123, 54321  ou -13579, etc.
+
+    Comentários são iniciados por '/' seguido de '*' e terminados por '*' seguido de '/', como 
+nos exemplos a seguir:
+        /* comentário de uma linha */
+        /*
+            comentário de várias linhas
+        */
+
+	Finalmente, eis a sintaxe:
+
+	MODULO                      = [ INCLUSOES ] DECLARACOES_GLOBAIS
+    INCLUSOES                   = INCLUSAO { INCLUSAO }
+    INCLUSAO                    = "#" "<" NOME_DE_ARQUIVO "." "h" ">"
+    NOME_DE_ARQUIVO             = "id"
+    DECLARACOES_GLOBAIS         = DECLARACAO_GLOBAL { DECLARACAO_GLOBAL }
+    DECLARACAO_GLOBAL           = TIPO VARIAVEL_GLOBAL ( { "," VARIAVEL_GLOBAL } ";" | 
+                                                           "(" [ DECLARACOES_DE_PARAMETROS ] ")" BLOCO ) 
+    TIPO                        = "int"  |
+    TIPO                        = "char" 
+    VARIAVEL_GLOBAL             = [ "*" ] "id" [ LISTA_DE_DIMENSOES ]
+    LISTA_DE_DIMENSOES          = "[" "ni" "]" { "[" "ni" "]" }
+    DECLARACOES_DE_PARAMETROS   = DECLARACAO_DE_PARAMETRO { "," DECLARACAO_DE_PARAMETRO }
+    DECLARACAO_DE_PARAMETRO     = TIPO PARAMETRO
+    PARAMETRO                   = [ "*" ] "id"
+    BLOCO                       = "{" [ DECLARACOES_LOCAIS ] [ COMANDOS ] "}" 
+    DECLARACOES_LOCAIS          = { TIPO DECLARACAO_LOCAL }
+    DECLARACAO_LOCAL            = VARIAVEL_LOCAL { "," VARIAVEL_LOCAL } ";"
+    VARIAVEL_LOCAL              = [ "*" ] "id" [ LISTA_DE_DIMENSOES ]
+    CORPO                       = COMANDO ";" |
+    CORPO                       = "{" COMANDOS "}"
+	COMANDOS                    = { COMANDO ";" }
+	COMANDO	                    = "if" "("  EXPRESSAO ")" CORPO [ "else" CORPO ] |
+	COMANDO	                    = "while" "( "EXPRESSAO ")" CORPO                |
+	COMANDO	                    = "do" CORPO "while" "(" EXPRESSAO ")"           |
+	COMANDO	                    = "return" EXPRESSAO                             |
+    COMANDO                     = "id" [ LISTA_DE_INDICES ] "=" EXPRESSAO        |
+	COMANDO	                    = "id" "(" [ LISTA_DE_EXPRESSOES ] ")"           
+    LISTA_DE_INDICES            = "[" EXPRESSAO "]" { "[" EXPRESSAO "]" }        
+	LISTA_DE_EXPRESSOES         = EXPRESSAO { , EXPRESSAO }
+	EXPRESSAO                   = EXP_SIMPLES [ RELACAO EXP_SIMPLES ]
+	RELACAO	                    = "<"  | 
+    RELACAO                     = "<=" | 
+    RELACAO                     = "==" | 
+    RELACAO                     = "!=" |
+    RELACAO                     = ">=" | 
+    RELACAO                     = ">"
+	EXP_SIMPLES                 = [ "-" ] TERMO { ( "+" | "-" ) TERMO }
+	TERMO	                    = FATOR { ( "*" | "/" ) FATOR }
+	FATOR	                    = "ni"                                            |
+    FATOR                       = [ ( "*" | "&" ) ] "id" [ LISTA_DE_INDICES ] |
+    FATOR                       = "(" EXPRESSAO ")"
+
+Exemplos
+>>>> A SER REALIZADO <<<<
+
+Informações
+
+	Se você estiver interessado em participar desse projeto (se é que podemos considerar 
+algo tão simples assim como um projeto :) ha ha ) é só me contactar via o e-mail abaixo:
+
+	ejmt_ce@hotmail.com

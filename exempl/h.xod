@@ -1,0 +1,43 @@
+tipo
+  TVet=vetor[3, 3] de cadeia;
+
+var
+  inteiro:I, J;
+  cadeia:C;
+  TVet:Vet;
+
+prog Vetor;
+inicio
+  I<-0;
+  enquanto I<3 faca
+    J<-0;
+    enquanto J<3 faca
+      impcad("Cadeia[");
+      impint(I);
+      impcad(",");
+      impint(J);
+      impcad("] <= ");
+      lercad(C);
+      Vet[I, J]<-C;
+      J<-J+1;
+    fimenq;
+    I<-I+1;
+  fimenq;
+
+  I<-0;
+  enquanto I<3 faca
+    J<-0;
+    enquanto J<3 faca
+      impcad("Vet[");
+      impint(I);
+      impcad(",");
+      impint(J);
+      impcad("] = ");
+      impcad(Vet[I, J]);
+      impcad(" ");
+      J<-J+1;
+    fimenq;
+    impcad("\n");
+    I<-I+1;
+  fimenq;
+fim.

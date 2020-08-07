@@ -1,0 +1,6 @@
+prog Simples;
+inicio
+  impint(123);
+  impint(456);
+  impint(789);
+fim.
