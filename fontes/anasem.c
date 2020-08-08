@@ -451,9 +451,9 @@ PUBLIC void DefinirVariavelGlobal(char *Id, int Tipo)
     	}
     	if (EspacoGlobal > TAM_DADOS) Abortar(7);
 }
-/*--------------------------------------------*/
-/* definir e gerar codigo para variavel local */
-/*--------------------------------------------*/
+/*------------------------*/
+/* definir variavel local */
+/*------------------------*/
 PUBLIC void DefinirVariavelLocal(long *N)
 {
     int Tipo=INT;
@@ -557,7 +557,7 @@ PUBLIC void TerminarPrograma(char *Id)
 /*----------------------*/
 /* iniciar sub-rotina   */
 /*----------------------*/
-PUBLIC void IniciarSubRotina(int Escopo, char *Id)
+PUBLIC void IniciarSubRotina(char *Id)
 {
   /* publico por default */
   fprintf(ArqMonta, "_%s:\n", Id);
