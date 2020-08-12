@@ -409,13 +409,13 @@ PRIVATE void VariavelLocal()
 /*-------------------------------------------------------*/
 /* DeclaracaoLocal = VariavelLocal { ',' VariavelLocal } */
 /*-------------------------------------------------------*/
-PRIVATE void DeclaracaoLocal()
+PRIVATE void DeclaracaoLocal(int T)
 {
-	VariavelLocal();
+	VariavelLocal(T);
 	while (Token==',')
 	{
 		Token=ObterToken(Lexema);
-		VariavelLocal();
+		VariavelLocal(T);
 	}
 	if (Token==';')
 	{
@@ -436,7 +436,7 @@ PRIVATE void DeclaracoesLocais()
 	while ((Token==INT) || (Token==CHAR))
 	{
 		Tipo(&T);
-		DeclaracaoLocal();
+		DeclaracaoLocal(T);
 	}
 }
 /*----------------------------------------------------*/
@@ -513,7 +513,11 @@ PRIVATE void DeclaracoesDeParametros()
 /*-------------------------------------------------------------*/
 /* VariavelGlobal = [ '*' ] Identificador [ ListaDeDimensões ] */
 /*-------------------------------------------------------------*/
+<<<<<<< HEAD
 PRIVATE void VariavelGlobal(char *Id)
+=======
+PRIVATE void VariavelGlobal(char *Identificador)
+>>>>>>> dcc950ab22e2879c3a4b7c27be50d6816311fc9c
 {
 	if (Token=='*')
 	{
@@ -527,6 +531,12 @@ PRIVATE void VariavelGlobal(char *Id)
 		{
 			ListaDeDimensoes();
 		}
+<<<<<<< HEAD
+=======
+		else
+		{
+		}
+>>>>>>> dcc950ab22e2879c3a4b7c27be50d6816311fc9c
   	}
   	else
   	{
@@ -538,6 +548,7 @@ PRIVATE void VariavelGlobal(char *Id)
 /*-------------------------------------------------------------------------------------------------------------------*/
 PRIVATE void DeclaracaoGlobal()
 {
+<<<<<<< HEAD
 	int  T; 
 	char Id[TAM_CADEIA + 1];
 
@@ -555,6 +566,26 @@ PRIVATE void DeclaracaoGlobal()
 					Token=ObterToken(Lexema);
       					VariavelGlobal(Id);
 					DefinirVariavelGlobal(Id, T);
+=======
+	int  T;
+        char Identificador[TAM_CADEIA + 1];	
+
+	Tipo(&T);
+  	VariavelGlobal(Identificador);
+	switch(Token)
+	{
+		case ';': 	IniciarSegmentoDeDados();
+				DefinirVariavelGlobal(Identificador, T);
+				Token=ObterToken(Lexema); 
+				break;
+		case ',': 	IniciarSegmentoDeDados();
+				DefinirVariavelGlobal(Identificador, T);
+				while (Token==',') 
+    			   	{
+      					Token=ObterToken(Lexema);
+      					VariavelGlobal(Identificador);
+					DefinirVariavelGlobal(Identificador, T);
+>>>>>>> dcc950ab22e2879c3a4b7c27be50d6816311fc9c
     				}
     				if (Token==';')
     				{
@@ -566,12 +597,14 @@ PRIVATE void DeclaracaoGlobal()
 				}
 				break;
 		case '(': 	IniciarSegmentoDeCodigo();
+				IniciarSubRotina(Identificador);
 				Token=ObterToken(Lexema);
     				DeclaracoesDeParametros();
     				if (Token==')')
     				{
       					Token=ObterToken(Lexema);
       					Bloco();
+					TerminarSubRotina(Identificador);
     				}
 				else
 				{
