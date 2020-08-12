@@ -1,2 +1,5 @@
-int I1,I2,I3;
+int I1;
 char C1,C2;
+int main()
+{
+}

@@ -513,25 +513,19 @@ PRIVATE void DeclaracoesDeParametros()
 /*-------------------------------------------------------------*/
 /* VariavelGlobal = [ '*' ] Identificador [ ListaDeDimensões ] */
 /*-------------------------------------------------------------*/
-PRIVATE void VariavelGlobal(int T)
+PRIVATE void VariavelGlobal(char *Id)
 {
-	char Identificador[TAM_LEXEMA + 1];
-
 	if (Token=='*')
 	{
 		Token=ObterToken(Lexema);
 	}
 	if (Token==IDENTIF)
   	{
-		strcpy(Identificador, Lexema);
+		strcpy(Id, Lexema);
     		Token=ObterToken(Lexema);
 		if (Token=='[')
 		{
 			ListaDeDimensoes();
-		}
-		else
-		{
-			DefinirVariavelGlobal(Identificador, T);	
 		}
   	}
   	else
@@ -544,19 +538,23 @@ PRIVATE void VariavelGlobal(int T)
 /*-------------------------------------------------------------------------------------------------------------------*/
 PRIVATE void DeclaracaoGlobal()
 {
-	int T; 
+	int  T; 
+	char Id[TAM_CADEIA + 1];
 
-	IniciarSegmentoDeDados();
 	Tipo(&T);
-  	VariavelGlobal(T);
+  	VariavelGlobal(Id);
 	switch(Token)
 	{
-		case ';': 	Token=ObterToken(Lexema); 
+		case ';': 	IniciarSegmentoDeDados();
+				DefinirVariavelGlobal(Id, T);
+				Token=ObterToken(Lexema); 
 				break;
-		case ',': 	while (Token==',') 
+		case ',': 	DefinirVariavelGlobal(Id, T);
+				while (Token==',') 
     			   	{
-      					Token=ObterToken(Lexema);
-      					VariavelGlobal(T);
+					Token=ObterToken(Lexema);
+      					VariavelGlobal(Id);
+					DefinirVariavelGlobal(Id, T);
     				}
     				if (Token==';')
     				{
