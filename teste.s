@@ -11,3 +11,9 @@ _C2:
 .byte 0
 
 .text
+_main:
+                                pushl %ebp
+                                movl  %esp, %ebp
+                                movl  %ebp, %esp
+                                popl  %ebp
+                                ret

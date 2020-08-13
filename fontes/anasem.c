@@ -557,7 +557,7 @@ PUBLIC void TerminarPrograma(char *Id)
 /*----------------------*/
 /* iniciar sub-rotina   */
 /*----------------------*/
-PUBLIC void IniciarSubRotina(int Escopo, char *Id)
+PUBLIC void IniciarSubRotina(char *Id)
 {
   /* publico por default */
   fprintf(ArqMonta, "_%s:\n", Id);

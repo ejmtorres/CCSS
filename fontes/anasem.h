@@ -184,7 +184,7 @@ PUBLIC void TerminarPrograma(char *Id);
 /*----------------------*/
 /* iniciar sub-rotina   */
 /*----------------------*/
-PUBLIC void IniciarSubRotina(int Escopo, char *Id);
+PUBLIC void IniciarSubRotina(char *Id);
 /*-----------------------*/
 /* terminar sub-rotina   */
 /*-----------------------*/

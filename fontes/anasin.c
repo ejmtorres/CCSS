@@ -567,12 +567,15 @@ PRIVATE void DeclaracaoGlobal()
 				}
 				break;
 		case '(': 	IniciarSegmentoDeCodigo();
+				DefinirNomeDaSubRotina(Id);
+				IniciarSubRotina(Id);
 				Token=ObterToken(Lexema);
     				DeclaracoesDeParametros();
     				if (Token==')')
     				{
       					Token=ObterToken(Lexema);
       					Bloco();
+					TerminarSubRotina(Id);
     				}
 				else
 				{
