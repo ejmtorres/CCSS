@@ -353,7 +353,7 @@ PUBLIC void TerminarMontagem(char *Inicio)
   {
     fprintf(ArqMonta, ".global _start\n");
     fprintf(ArqMonta, "_start:\n");
-    fprintf(ArqMonta, " %30s jmp   _%s\n", BRANCO, Inicio);
+    fprintf(ArqMonta, " %30s call  _%s\n", BRANCO, Inicio);
   }
 	
   Remover(NGLOBAL);

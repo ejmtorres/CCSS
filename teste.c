@@ -1,5 +1,8 @@
 int I1;
-char C1,C2;
+char func()
+{
+}
 int main()
 {
 }
+char C1;

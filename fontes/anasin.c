@@ -617,7 +617,9 @@ PUBLIC void IniciarAnalisadorSintatico(char *NomeFonte, char *NomeMonta)
   	Token=ObterToken(Lexema);
   	Modulo();
 	if (Token==FIM_ARQ)
-	{
+	{	
+		TerminarMontagem("main");
+		TerminarPrograma("main");
 	}	
 	else Abortar(0);
 }
