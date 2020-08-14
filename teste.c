@@ -5,4 +5,4 @@ char func()
 int main()
 {
 }
-char C1;
+char C1,C2;

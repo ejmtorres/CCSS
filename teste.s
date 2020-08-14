@@ -22,6 +22,9 @@ _main:
 .global _C1
 _C1:
 .byte 0
+.global _C2
+_C2:
+.byte 0
 .global _start
 _start:
                                 call  _main
