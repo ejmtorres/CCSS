@@ -164,7 +164,7 @@ PUBLIC void DefinirVariavelGlobal(char *Id, int Tipo);
 /*----------------------------------------*/
 /* definir e gerar codigo para parametro */
 /*----------------------------------------*/
-PUBLIC void DefinirParametro(char *Id, int Tipo);
+PUBLIC void DefinirParametro(char *Id, int Tipo, int NP);
 /*-----------------------------------------*/
 /* ajustar os deslocamentos dos parametros */
 /*-----------------------------------------*/
@@ -189,6 +189,10 @@ PUBLIC void IniciarSubRotina(char *Id);
 /* terminar sub-rotina   */
 /*-----------------------*/
 PUBLIC void TerminarSubRotina(char *Id);
+/*--------------------*/
+/* definir sub-rotina */
+/*--------------------*/
+PUBLIC void DefinirSubRotina(char *Id, int T, int NP);
 /*---------------*/
 /* iniciar bloco */
 /*---------------*/

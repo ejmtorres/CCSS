@@ -466,7 +466,7 @@ PRIVATE void Bloco()
 /*-----------------------------------*/
 /* Parametro = [ '*' ] IDENTIFICADOR */
 /*-----------------------------------*/
-PRIVATE void Parametro()
+PRIVATE void Parametro(int Tipo, int NP)
 {
 	if (Token=='*')
 	{
@@ -474,6 +474,7 @@ PRIVATE void Parametro()
 	}
 	if (Token==IDENTIF)
 	{
+		DefinirParametro(Lexema, Tipo, NP);
 		Token=ObterToken(Lexema);
 	}
 	else
@@ -484,29 +485,32 @@ PRIVATE void Parametro()
 /*----------------------------------------*/
 /* DeclaracaoDeParametro = Tipo Parametro */
 /*----------------------------------------*/
-PRIVATE void DeclaracaoDeParametro()
+PRIVATE void DeclaracaoDeParametro(int NP)
 {
 	int T;
 
 	Tipo(&T);
-	Parametro();
+	Parametro(T, NP);
 }
 /*-------------------------------------------------------------------------------*/
 /* DeclaracoesDeParametros = DeclaracaoDeParametro { ',' DeclaracaoDeParametro } */
 /*-------------------------------------------------------------------------------*/
-PRIVATE void DeclaracoesDeParametros()
+PRIVATE void DeclaracoesDeParametros(int *NP)
 {
+	*NP = 0;
 	if (Token==')')
 	{
 		/* sem parametros */
 	}
 	else
 	{
-		DeclaracaoDeParametro();
+		*NP = *NP + 1;
+		DeclaracaoDeParametro(*NP);
 		while (Token==',')
 		{
 			Token=ObterToken(Lexema);
-			DeclaracaoDeParametro();
+			*NP = *NP + 1;
+			DeclaracaoDeParametro(*NP);
 		}
 	}
 }
@@ -540,6 +544,7 @@ PRIVATE void DeclaracaoGlobal()
 {
 	char Id[TAM_LEXEMA + 1];
 	int  T; 
+	int  NP; // N. de parametros (se função)
 
 	Tipo(&T);
   	VariavelGlobal(Id);
@@ -570,7 +575,8 @@ PRIVATE void DeclaracaoGlobal()
 				DefinirNomeDaSubRotina(Id);
 				IniciarSubRotina(Id);
 				Token=ObterToken(Lexema);
-    				DeclaracoesDeParametros();
+    				DeclaracoesDeParametros(&NP);
+				DefinirSubRotina(ObterNomeDaSubRotina(), T, NP);
     				if (Token==')')
     				{
       					Token=ObterToken(Lexema);
@@ -595,7 +601,7 @@ PRIVATE void DeclaracoesGlobais()
   	{
     		DeclaracaoGlobal();
   	} 
-
+	Listar();
 }
 /*-------------------------------------------*/
 /* Modulo = [ Inclusoes ] DeclaracoesGlobais */

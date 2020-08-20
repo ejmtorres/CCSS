@@ -1,8 +1,7 @@
-int I1;
-char func()
+int A, B, C;
+int func(int a, int b, char c)
 {
 }
 int main()
 {
 }
-char C1,C2;

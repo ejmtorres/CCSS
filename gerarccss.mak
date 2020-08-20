@@ -1,5 +1,7 @@
-COMP=gcc
-OPC=-W -O2 -c
+#COMP=gcc
+COMP=clang
+#OPC=-W -O2 -c
+OPC=-Wdeprecated -O2 -c
 
 ccss: 	     ccss.o anasem.o anasin.o analex.o
 	     $(COMP) -o ccss ccss.o anasem.o anasin.o analex.o

@@ -1,6 +1,12 @@
 .data
-.global _I1
-_I1:
+.global _A
+_A:
+.long 0
+.global _B
+_B:
+.long 0
+.global _C
+_C:
 .long 0
 
 .text
@@ -18,13 +24,6 @@ _main:
                                 movl  %ebp, %esp
                                 popl  %ebp
                                 ret
-.data
-.global _C1
-_C1:
-.byte 0
-.global _C2
-_C2:
-.byte 0
 .global _start
 _start:
                                 call  _main
