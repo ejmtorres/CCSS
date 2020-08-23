@@ -538,23 +538,23 @@ PUBLIC void GerarVariavelLocal(long N)
 /*----------------------------*/
 /* iniciar programa principal */
 /*----------------------------*/
-PUBLIC void IniciarPrograma(char *Id)
-{
-  	fprintf(ArqMonta, "\n.global _%s\n", Id);
-  	fprintf(ArqMonta, "_%s:\n",        Id);
-}
+//PUBLIC void IniciarPrograma(char *Id)
+//{
+//  	fprintf(ArqMonta, "\n.global _%s\n", Id);
+//  	fprintf(ArqMonta, "_%s:\n",        Id);
+//}
 /*-----------------------------*/
 /* terminar programa principal */
 /*-----------------------------*/
-PUBLIC void TerminarPrograma(char *Id)
-{
-	if (Procurar(Id) != -1)
-	{
-		fprintf(ArqMonta, " %30s movl  $0, %%ebx\n", BRANCO);
-  		fprintf(ArqMonta, " %30s movl  $1, %%eax\n", BRANCO);
-  		fprintf(ArqMonta, " %30s int   $0x80\n",     BRANCO);
-	}
-}
+//PUBLIC void TerminarPrograma(char *Id)
+//{
+//	if (Procurar(Id) != -1)
+//	{
+//		fprintf(ArqMonta, " %30s movl  $0, %%ebx\n", BRANCO);
+// 		fprintf(ArqMonta, " %30s movl  $1, %%eax\n", BRANCO);
+//  		fprintf(ArqMonta, " %30s int   $0x80\n",     BRANCO);
+//	}
+//}
 /*----------------------*/
 /* iniciar sub-rotina   */
 /*----------------------*/
