@@ -642,8 +642,8 @@ PUBLIC void TerminarFuncao(int *R, int *T, int NA, int NB, int TA, char *Id)
   	}
   	else
   	{
-    		*T = (int)Tabela[Ind]->Desl; /* tipo de retorno (no deslocamento)*/
-    		NP = Tabela[Ind]->Tipo;      /* n. de parametros (em tipo)*/
+    		*T = (int)Tabela[Ind]->Tipo; /* tipo de retorno */
+    		NP = Tabela[Ind]->Desl;      /* n. de parametros (em deslocamento) */
     		if (NA < NP) Abortar(9);
     		if (NA > NP) Abortar(8);
   	}
@@ -1176,7 +1176,8 @@ PUBLIC void GerarChamada(char *Id, int NA, int NB)
   	else
   	{
     		Cat = Tabela[Ind]->Categ;     /* id deve ser proc interna */
-    		if (Cat != CPROC) Abortar(6);
+    		//if (Cat != CPROC) Abortar(6);
+		if (Cat != CFUNC) Abortar(6);
     		NP  = Tabela[Ind]->Tipo;      /* contem o numero de parametros */
     		if (NA > NP) Abortar(8);
     		if (NA < NP) Abortar(9);

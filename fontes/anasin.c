@@ -17,8 +17,8 @@
 
 PRIVATE int  Token;
 PRIVATE char Lexema[TAM_LEXEMA+1];
-PRIVATE void Expressao();
-PRIVATE void Comandos();
+PRIVATE void EXPRESSAO();
+PRIVATE void COMANDOS();
 
 /*----------------------------------*/
 /* mostrar erro sintatico e abortar */
@@ -47,57 +47,56 @@ PRIVATE void Abortar(int N)
   exit(N);
 }
 /*-------------------------------------------*/
-/* Relacao: '<', "<=", '>', ">=", "==", "!=" */
+/* RELACAO: '<', "<=", '>', ">=", "==", "!=" */
 /*-------------------------------------------*/
-PRIVATE void Relacao(char *Op)
+PRIVATE void RELACAO(char *Op)
 {
 	Token=ObterToken(Lexema);
 }
-/*-------------------------------------------------*/
-/* ListaDeExpressoes = Expressao { ',' Expressao } */
-/*-------------------------------------------------*/
-PRIVATE void ListaDeExpressoes(int *NA, int *NB)
+/*---------------------------------------------------*/
+/* LISTA_DE_EXPRESSOES = EXPRESSAO { ',' EXPRESSAO } */
+/*---------------------------------------------------*/
+PRIVATE void LISTA_DE_EXPRESSOES(int *NA, int *NB)
 {
-    int T; // tipo da expressao
+	int T; // tipo da expressao
     
-    Expressao(&T);
-    EmpilharExpressao();
-    *NA = *NA + 1;
-    switch(T)
-    {
-        case INT:  *NB = *NB + NB_INTEIRO;  break;
-    //    case PONTEIRO: *NB = *NB + NB_PONTEIRO; break;
-    //    case CADEIA:   *NB = *NB + NB_PONTEIRO; break;
-    }
-
-  	while (Token == ',')
+    	EXPRESSAO(&T);
+    	EmpilharExpressao();
+    	*NA = *NA + 1;
+    	switch(T)
+    	{
+        	case INT:  *NB = *NB + NB_INTEIRO;  break;
+    		//    case PONTEIRO: *NB = *NB + NB_PONTEIRO; break;
+    		//    case CADEIA:   *NB = *NB + NB_PONTEIRO; break;
+    	}
+	while (Token == ',')
   	{
     		Token=ObterToken(Lexema);
-    		Expressao(&T);
-        EmpilharExpressao();
-        *NA = *NA + 1;
-        switch(T)
-        {
-            case INT:  *NB = *NB + NB_INTEIRO;  break;
-            //case PONTEIRO: *NB = *NB + NB_PONTEIRO; break;
-            //case CADEIA:   *NB = *NB + NB_PONTEIRO; break;
-        }
+    		EXPRESSAO(&T);
+        	EmpilharExpressao();
+        	*NA = *NA + 1;
+        	switch(T)
+        	{
+            		case INT:  *NB = *NB + NB_INTEIRO;  break;
+            		//case PONTEIRO: *NB = *NB + NB_PONTEIRO; break;
+            		//case CADEIA:   *NB = *NB + NB_PONTEIRO; break;
+        	}
 
   	}
 }
-/*----------------------------------------------------------*/
-/* ListaDeIndices = '[' Expressao ']' { '[' Expressao ']' } */
-/*----------------------------------------------------------*/
-PRIVATE void ListaDeIndices()
+/*------------------------------------------------------------*/
+/* LISTA_DE_INDICES = '[' EXPRESSAO ']' { '[' EXPRESSAO ']' } */
+/*------------------------------------------------------------*/
+PRIVATE void LISTA_DE_INDICES()
 {
-	Expressao();
+	EXPRESSAO();
 	if (Token==']')
 	{
 		Token=ObterToken(Lexema);
 		while (Token=='[')
 		{
 			Token=ObterToken(Lexema);
-			Expressao();
+			EXPRESSAO();
 			if (Token==']')
 			{
 				Token=ObterToken(Lexema);
@@ -113,41 +112,41 @@ PRIVATE void ListaDeIndices()
 		Abortar(10);
 	}
 }
-/*--------------------------------------------------------------------------------------------*/
-/* Fator = NUMERO | [ ( '*' | '&' ) ] IDENTIFICADOR [ ListaDeExpressoes ] | '(' Expressao ')' */
-/*--------------------------------------------------------------------------------------------*/
-PRIVATE void Fator(int *R, int *T)
+/*----------------------------------------------------------------------------------------------*/
+/* FATOR = NUMERO | [ ( '*' | '&' ) ] IDENTIFICADOR [ LISTA_DE_EXPRESSOES ] | '(' EXPRESSAO ')' */
+/*----------------------------------------------------------------------------------------------*/
+PRIVATE void FATOR(int *R, int *T)
 {
-    auto     int TR;      /* topo dos registradores */
-    register int Cat;     /* categoria */
-    auto     int NA;      /* numero de argumentos ou indices */
-    auto     int NB;      /* numero de bytes empilhados */
-    auto     int TA;      /* topo auxilar dos registradores */
-    auto     int P;       /* entrada para tipo estruturado */
-    char Alvo[TAM_NOME];  /* nome da funcao ou vetor */
+	int TR;      /* topo dos registradores */
+    	int Cat;     /* categoria */
+    	int NA;      /* numero de argumentos ou indices */
+    	int NB;      /* numero de bytes empilhados */
+    	int TA;      /* topo auxilar dos registradores */
+    	int P;       /* entrada para tipo estruturado */
+    	char Alvo[TAM_NOME];  /* nome da funcao ou vetor */
 
-  switch(Token)
-  {
-    case IDENTIF : //Cat = ObterCategoria(Lexema);
-                   /* funcao declarada ou externa */
-                   //if ((Cat == CFUNC)||(Cat == NADA))
-                   //{
-                   //  strcpy(Alvo, Lexema);
-                   //  Token = ObterToken(Lexema);
-                   //  IniciarFuncao(&NA, &NB, &TA);
-                   //  if (Token == '(')
-                   //  {
-                   //     Token = ObterToken(Lexema);
-                   //     if (Token == ')') Token = ObterToken(Lexema);
-                   //     else
-                   //     {
-                   //       ListaDeExpressoes(&NA, &NB);
-                   //       if (Token == ')') Token = ObterToken(Lexema);
-                   //       else Abortar(2);
-                   //     }
-                   //  }
-                   //  TerminarFuncao(R, T, NA, NB, TA, Alvo);
-                   //}
+  	switch(Token)
+  	{
+    		case IDENTIF : 	Cat = ObterCategoria(Lexema);
+                   		/* funcao declarada ou externa */
+                   		if ((Cat == CFUNC)||(Cat == NADA))
+                   		{
+                     			strcpy(Alvo, Lexema);
+                     			Token = ObterToken(Lexema);
+                     			IniciarFuncao(&NA, &NB, &TA);
+                     			if (Token == '(')
+                     			{
+                        			Token = ObterToken(Lexema);
+                        			if (Token == ')') Token = ObterToken(Lexema);
+                        			else
+                        			{
+                          				LISTA_DE_EXPRESSOES(&NA, &NB);
+                          				if (Token == ')') Token = ObterToken(Lexema);
+                          				else Abortar(2);
+                        			}
+                     			}
+                     			TerminarFuncao(R, T, NA, NB, TA, Alvo);
+                   		}
                    //else
                    /* variavel vetor */
                    //if (Cat == CVET)
@@ -166,15 +165,15 @@ PRIVATE void Fator(int *R, int *T)
                    //  TerminarFatorVetor(NA, TA, *R, Alvo);
                    //}
                    /* variavel simples */
-                   //else
-                   {
-                     GerarFator(R, T, Token, Lexema);
-                     Token = ObterToken(Lexema);
-                   }
-                   break;
-    case NUMERO  : GerarFator(R, T, Token, Lexema);
-                   Token = ObterToken(Lexema);
-                   break;
+                   		else
+                   		{
+                     			GerarFator(R, T, Token, Lexema);
+                     			Token = ObterToken(Lexema);
+                   		}
+                   		break;
+    		case NUMERO  : 	GerarFator(R, T, Token, Lexema);
+                   		Token = ObterToken(Lexema);
+                   		break;
     //case VALOR   : Token = ObterToken(Lexema);
     //               if (Token == '(') Token = ObterToken(Lexema);
     //               else Abortar(18);
@@ -187,146 +186,72 @@ PRIVATE void Fator(int *R, int *T)
     //               if (Token == ')') Token = ObterToken(Lexema);
     //               else Abortar(2);
     //               break;
-    case '('     : SalvarRegistradores(&TR);
-                   Token = ObterToken(Lexema);
-                   Expressao(T);
-                   if (Token == ')') Token = ObterToken(Lexema);
-                   else Abortar(2);
-                   RecuperarRegistradores(R, TR);
-                   break;
-    default      : Abortar(10);
+    		case '('     :	SalvarRegistradores(&TR);
+                   		Token = ObterToken(Lexema);
+                   		EXPRESSAO(T);
+                   		if (Token == ')') Token = ObterToken(Lexema);
+                   		else Abortar(2);
+                   		RecuperarRegistradores(R, TR);
+                   		break;
+    		default      : 	Abortar(10);
   }
-	
-/*    switch(Token)
-	{
-        case NUMERO  :  GerarFator(R, T, Token, Lexema);
-		                Token=ObterToken(Lexema);
-					    break;
-		case '*'	:
-		case '&'	:	Token=ObterToken(Lexema);	
-					    if (Token==IDENTIF)
-					    {
-						    Token=ObterToken(Lexema);
-						    if (Token=='[')
-						    {
-							Token=ObterToken(Lexema);
-							ListaDeIndices();
-						    }
-					    }
-					    else
-					    {
-						    Abortar(1);
-					    }
-					    break;
-		case IDENTIF	: 	Token=ObterToken(Lexema);
-					if (Token=='[')
-					{
-						Token=ObterToken(Lexema);
-						ListaDeIndices();
-					}
-					break;
-		case '('	:	Token=ObterToken(Lexema);
-					Expressao();
-					if (Token==')')
-					{
-						Token=ObterToken(Lexema);
-					}
-					else
-					{
-						Abortar(4);
-					}
-					break;
-	}
-*/
 }
 /*---------------------------------------*/
-/* Termo = Fator { ( '*' | '/' ) Fator } */
+/* TERMO = FATOR { ( '*' | '/' ) FATOR } */
 /*---------------------------------------*/
-PRIVATE void Termo(int *R, int *T)
+PRIVATE void TERMO(int *R, int *T)
 {
-/*
-	Fator();
-  	while ((Token == '*') || (Token == '/'))
+  	int R1, R2; /* registradores para os fatores */
+  	int T1, T2; /* tipos dos fatores */
+  	int Operador;
+
+  	FATOR(&R1, &T1);
+  	while ((Token == '*')||(Token == '/'))
   	{
-    		Token=ObterToken(Lexema);
-    		Fator();
+    		Operador = Token;
+    		Token    = ObterToken(Lexema);
+    		FATOR(&R2, &T2);
+    		Operar(Operador, R1, R2, T1, T2);
   	}
-*/
-  int R1, R2; /* registradores para os fatores */
-  int T1, T2; /* tipos dos fatores */
-  int Operador;
-
-  Fator(&R1, &T1);
-  while ((Token == '*')||(Token == '/'))
-  {
-    Operador = Token;
-    Token    = ObterToken(Lexema);
-    Fator(&R2, &T2);
-    Operar(Operador, R1, R2, T1, T2);
-  }
-  *R = R1;
-  *T = T1;
-
-}
-/*----------------------------------------------------------*/
-/* ExpressaoSimples = [ '-' ] Termo { ( '+' | '-' ) Termo } */
-/*----------------------------------------------------------*/
-PRIVATE void ExpressaoSimples(int *R, int *T)
-{
-/*
-	if (Token == '-')
-  	{
-    		Token=ObterToken(Lexema);
-  	}
-  	Termo();
-  	while ((Token == '+') || (Token == '-'))
-  	{
-    		Token=ObterToken(Lexema);
-    		Termo();
-  	}
-*/
-  int R1, R2; /* registradores de cada termo */
-  int T1, T2; /* tipos de cada termo */
-  int Operador;
-  int Menos; /* setado se tem menos unario */
-
-  Menos = 0;
-  if (Token == '-')
-  {
-    Menos = 1;
-    Token = ObterToken(Lexema);
-  }
-  Termo(&R1, &T1);
-  GerarMenos(Menos, R1);
-  while ((Token == '+')||(Token == '-'))
-  {
-    Operador = Token;
-    Token    = ObterToken(Lexema);
-    Termo(&R2, &T2);
-    Operar(Operador, R1, R2, T1, T2);
-  }
-  *R = R1;
-  *T = T1;
-
+  	*R = R1;
+  	*T = T1;
 }
 /*-----------------------------------------------------------*/
-/* Expressao = ExpressaoSimples [ Relacao ExpressaoSimples ] */
+/* EXPRESSAO_SIMPLES = [ '-' ] TERMO { ( '+' | '-' ) TERMO } */
 /*-----------------------------------------------------------*/
-PRIVATE void Expressao(int *T)
+PRIVATE void EXPRESSAO_SIMPLES(int *R, int *T)
 {
-/*
-	ExpressaoSimples();
-	if ((Token=='<')     || (Token=='>')     ||
-	    (Token==MENORIG) || (Token==MAIORIG) ||
-	    (Token==IGUAL)   || (Token==DIFERE))
-	{
-		Relacao();
-		ExpressaoSimples();
-	}
-*/
-  int R1, R2; /* registradores das expressoes simples */
-  int T1, T2; /* tipos das expressoes simples */
-  char Op[3]; /* operador das expressoes simples */
+  	int R1, R2; /* registradores de cada termo */
+  	int T1, T2; /* tipos de cada termo */
+  	int Operador;
+  	int Menos; /* setado se tem menos unario */
+
+  	Menos = 0;
+  	if (Token == '-')
+  	{
+    		Menos = 1;
+    		Token = ObterToken(Lexema);
+  	}
+  	TERMO(&R1, &T1);
+  	GerarMenos(Menos, R1);
+  	while ((Token == '+')||(Token == '-'))
+  	{
+    		Operador = Token;
+    		Token    = ObterToken(Lexema);
+    		TERMO(&R2, &T2);
+    		Operar(Operador, R1, R2, T1, T2);
+  	}
+  	*R = R1;
+  	*T = T1;
+}
+/*-------------------------------------------------------------*/
+/* EXPRESSAO = EXPRESSAO_SIMPLES [ RELACAO EXPRESSAO_SIMPLES ] */
+/*-------------------------------------------------------------*/
+PRIVATE void EXPRESSAO(int *T)
+{
+  	int R1, R2; /* registradores das expressoes simples */
+  	int T1, T2; /* tipos das expressoes simples */
+  	char Op[3]; /* operador das expressoes simples */
 
   //if (Token == STRING)
   //{
@@ -349,8 +274,8 @@ PRIVATE void Expressao(int *T)
   //  else Abortar(2);
   //}
   //else
-  {
-    ExpressaoSimples(&R1, &T1);
+  	{
+    		EXPRESSAO_SIMPLES(&R1, &T1);
     //if (Relacao(Lexema))
     //{
     //  strcpy(Op, Lexema);
@@ -358,14 +283,13 @@ PRIVATE void Expressao(int *T)
     //  ExpressaoSimples(&R2, &T2);
     //  OperarRelacao(Op, R1, R2, T1, T2);
     //}
-    *T = T1;
-  }
-
+    		*T = T1;
+  	}
 }
 /*-----------------------------------*/
-/* Tipo = INT [ '*' ] | CHAR [ '*' ] */
+/* TIPO = INT [ '*' ] | CHAR [ '*' ] */
 /*-----------------------------------*/
-PRIVATE void Tipo(int *T)
+PRIVATE void TIPO(int *T)
 {
 	switch(Token)
   	{
@@ -378,48 +302,17 @@ PRIVATE void Tipo(int *T)
     		default   	: 	Abortar(2);
   	}
 }
-/*----------------------------------------------------------------------*/
-/* ComandoDeAtribuicao = IDENTIFICADOR [ ListaDeIndices ] '=' Expressao */
-/*----------------------------------------------------------------------*/
-PRIVATE void ComandoDeAtribuicao(char *Alvo)
+/*--------------------------------------------------------------------------*/
+/* COMANDO_DE_ATRIBUICAO = IDENTIFICADOR [ LISTA_DE_INDICES ] '=' EXPRESSAO */
+/*--------------------------------------------------------------------------*/
+PRIVATE void COMANDO_DE_ATRIBUICAO(char *Alvo)
 {
-/*
-	if (Token == '[')
-    	{
-      		Token=ObterToken(Lexema);
-      		ListaDeIndices();
-      		if (Token == ']') 
-		{
-			Token=ObterToken(Lexema);
-    			if (Token == '=') 
-    			{
-				Token=ObterToken(Lexema);
-				Expressao();
-    			}
-    			else 
-    			{
-				Abortar(11);
-    			}
-		}
-      		else Abortar(10);
-    	}
-    	else
-    	if (Token == '=') 
-    	{
-		Token=ObterToken(Lexema);
-		Expressao();
-    	}
-    	else 
-    	{
-		Abortar(9);
-    	}
-*/
-  auto     int T;       /* tipo base do alvo */
-  auto     int P;       /* tipo estruturado do alvo */
-  register int Cat;     /* categoria do alvo */
-  auto     int NI;      /* numero de indices */
+  	int T;       /* tipo base do alvo */
+  	int P;       /* tipo estruturado do alvo */
+  	int Cat;     /* categoria do alvo */
+  	int NI;      /* numero de indices */
 
-  Cat   = ObterCategoria(Alvo);
+  	Cat   = ObterCategoria(Alvo);
   //Token = ObterToken(Lexema);
   //if (Cat == CVET) /* variavel vetor */
   //{
@@ -439,83 +332,105 @@ PRIVATE void ComandoDeAtribuicao(char *Alvo)
   //  GerarAtribuicaoVetor(Alvo, T);
   //}
   //else             /* variavel simples */
-  {
-    if (Token == '=') Token = ObterToken(Lexema);
-    else Abortar(9);
-    Expressao(&T);
-    GerarAtribuicao(Alvo, T);
-  }
+  	{
+    		if (Token == '=') Token = ObterToken(Lexema);
+    		else Abortar(9);
+    		EXPRESSAO(&T);
+    		GerarAtribuicao(Alvo, T);
+  	}
+}
+/*----------------------------------------------------------------*/
+/* COMANDO_DE_CHAMADA = IDENTIFICADOR '(' LISTA_DE_EXPRESSOES ')' */
+/*----------------------------------------------------------------*/
+PRIVATE void COMANDO_DE_CHAMADA(char *Alvo)
+{
+  	int  NA;             /* numero de argumentos */
+  	int  NB;             /* numero de bytes empilhados */
 
+  	NA = 0;
+  	NB = 0;
+  	Token = ObterToken(Lexema);
+  	if (Token == '(')
+  	{
+    		Token = ObterToken(Lexema);
+    		if (Token == ')') Token = ObterToken(Lexema);
+    		else
+    		{
+      			LISTA_DE_EXPRESSOES(&NA, &NB);
+      			if (Token == ')') Token = ObterToken(Lexema);
+      			else Abortar(2);
+    		}
+  	}
+  GerarChamada(Alvo, NA, NB);
 }
-/*------------------------------------------------------------*/
-/* ComandoDeChamada = IDENTIFICADOR '(' ListaDeExpressoes ')' */
-/*------------------------------------------------------------*/
-PRIVATE void ComandoDeChamada()
+/*-----------------------------------*/
+/* COMANDO_RETURN = RETURN EXPRESSAO */
+/*-----------------------------------*/
+PRIVATE void COMANDO_RETURN()
+{
+	int T; /* tipo da expressao */
+
+	Token = ObterToken(Lexema);
+	EXPRESSAO(&T);
+	GerarRetorne();
+}
+/*-----------------------------------------------*/
+/* COMANDO_DO = DO CORPO WHILE '(' EXPRESSAO ')' */
+/*-----------------------------------------------*/
+PRIVATE void COMANDO_DO()
 {
 }
-/*----------------------------------*/
-/* ComandoRETURN = RETURN Expressao */
-/*----------------------------------*/
-PRIVATE void ComandoRETURN()
+/*-----------------------------------------------*/
+/* COMANDO_WHILE = WHILE '(' EXPRESSAO ')' CORPO */
+/*-----------------------------------------------*/
+PRIVATE void COMANDO_WHILE()
 {
 }
-/*----------------------------------------------*/
-/* ComandoDO = DO Corpo WHILE '(' Expressao ')' */
-/*----------------------------------------------*/
-PRIVATE void ComandoDO()
+/*--------------------------------------------------------*/
+/* COMANDO_IF = IF '(' EXPRESSAO ')' CORPO [ ELSE CORPO ] */ 
+/*--------------------------------------------------------*/
+PRIVATE void COMANDO_IF()
 {
 }
-/*----------------------------------------------*/
-/* ComandoWHILE = WHILE '(' Expressao ')' Corpo */
-/*----------------------------------------------*/
-PRIVATE void ComandoWHILE()
+/*---------------------------------------------*/
+/* COMANDO direciona para o comando apropriado */
+/*---------------------------------------------*/
+PRIVATE void COMANDO()
 {
-}
-/*-------------------------------------------------------*/
-/* ComandoIF = IF '(' Expressao ')' Corpo [ ELSE Corpo ] */ 
-/*-------------------------------------------------------*/
-PRIVATE void ComandoIF()
-{
-}
-/*--------------------------------------------------*/
-/* Comando vai direcionar para o comando apropriado */
-/*--------------------------------------------------*/
-PRIVATE void Comando()
-{
-	char Id[TAM_LEXEMA + 1];
+	char Id[TAM_LEXEMA + 1]; // identificador
 
 	switch(Token)
   	{
-		case IF		: 	ComandoIF(); 
+		case IF		: 	COMANDO_IF(); 
 					break;
-		case WHILE	: 	ComandoWHILE();	
+		case WHILE	: 	COMANDO_WHILE();	
 					break;
-		case DO		: 	ComandoDO();
+		case DO		: 	COMANDO_DO();
 					break;
-		case RETURN	: 	ComandoRETURN();
+		case RETURN	: 	COMANDO_RETURN();
 					break;
 		case IDENTIF	:	strcpy(Id, Lexema);
 					Token=ObterToken(Lexema);
 			  		switch(Token)
 			  		{
 						case '='	:
-						case '[' 	:	ComandoDeAtribuicao(Id);
+						case '[' 	:	COMANDO_DE_ATRIBUICAO(Id);
 									break;
-						//case '(' 	: 	ComandoDeChamada(Id);
-						//			break;
+						case '(' 	: 	COMANDO_DE_CHAMADA(Id);
+									break;
 						default  	: 	Abortar(7);
 			  		}
 					break;
   	}
 }
 /*----------------------------*/
-/* Comandos = { Comando ';' } */
+/* COMANDOS = { COMANDO ';' } */
 /*----------------------------*/
-PRIVATE void Comandos()
+PRIVATE void COMANDOS()
 {
 	while ((Token==IF) || (Token==WHILE) || (Token==DO) || (Token==RETURN) || (Token==IDENTIF))
 	{
-		Comando();
+		COMANDO();
 		if (Token==';')
 		{
 			Token=ObterToken(Lexema);
@@ -527,13 +442,13 @@ PRIVATE void Comandos()
 	}
 }
 /*----------------------------------------*/
-/* Corpo = Comando ';' | '{' Comandos '}' */
+/* CORPO = COMANDO ';' | '{' COMANDOS '}' */
 /*----------------------------------------*/
-PRIVATE void Corpo()
+PRIVATE void CORPO()
 {
 	if (Token=='{')
 	{
-		Comandos();
+		COMANDOS();
 		if (Token=='}')
 		{
 			Token=ObterToken(Lexema);
@@ -545,7 +460,7 @@ PRIVATE void Corpo()
 	}
 	else
 	{
-		Comando();
+		COMANDO();
 		if (Token==';')
 		{
 			Token=ObterToken(Lexema);
@@ -557,9 +472,9 @@ PRIVATE void Corpo()
 	}
 }
 /*------------------------------------------------------*/
-/* ListaDeDimensoes = '[' NUMERO ']' { '[' NUMERO ']' } */
+/* LISTA_DE_DIMENSOES = '[' NUMERO ']' { '[' NUMERO ']' } */
 /*------------------------------------------------------*/
-PRIVATE void ListaDeDimensoes()
+PRIVATE void LISTA_DE_DIMENSOES()
 {
 	Token=ObterToken(Lexema);
 	if (Token==NUMERO)
@@ -599,10 +514,10 @@ PRIVATE void ListaDeDimensoes()
 		Abortar(12);
 	}
 }
-/*------------------------------------------------------------*/
-/* VariavelLocal = [ '*' ] IDENTIFICADOR [ ListaDeDimensoes ] */
-/*------------------------------------------------------------*/
-PRIVATE void VariavelLocal()
+/*---------------------------------------------------------------*/
+/* VARIAVEL_LOCAL = [ '*' ] IDENTIFICADOR [ LISTA_DE_DIMENSOES ] */
+/*---------------------------------------------------------------*/
+PRIVATE void VARIAVEL_LOCAL(int Tipo)
 {
 	if (Token=='*')
 	{
@@ -613,7 +528,7 @@ PRIVATE void VariavelLocal()
     		Token=ObterToken(Lexema);
 		if (Token=='[')
 		{
-			ListaDeDimensoes();
+			LISTA_DE_DIMENSOES();
 		}
 		else
 		{
@@ -625,16 +540,16 @@ PRIVATE void VariavelLocal()
     		Abortar(1);
   	}
 }
-/*-------------------------------------------------------*/
-/* DeclaracaoLocal = VariavelLocal { ',' VariavelLocal } */
-/*-------------------------------------------------------*/
-PRIVATE void DeclaracaoLocal()
+/*----------------------------------------------------------*/
+/* DECLARACAO_LOCAL = VARIAVEL_LOCAL { ',' VARIAVEL_LOCAL } */
+/*----------------------------------------------------------*/
+PRIVATE void DECLARACAO_LOCAL(int T)
 {
-	VariavelLocal();
+	VARIAVEL_LOCAL(T);
 	while (Token==',')
 	{
 		Token=ObterToken(Lexema);
-		VariavelLocal();
+		VARIAVEL_LOCAL(T);
 	}
 	if (Token==';')
 	{
@@ -645,29 +560,29 @@ PRIVATE void DeclaracaoLocal()
 		Abortar(3);
 	}
 }
-/*----------------------------------------------*/
-/* DeclaracoesLocais = { Tipo DeclaracaoLocal } */
-/*----------------------------------------------*/
-PRIVATE void DeclaracoesLocais()
+/*------------------------------------------------*/
+/* DECLARACOES_LOCAIS = { TIPO DECLARACAO_LOCAL } */
+/*------------------------------------------------*/
+PRIVATE void DECLARACOES_LOCAIS()
 {
-	int T;
+	int T; // tipo
 
 	while ((Token==INT) || (Token==CHAR))
 	{
-		Tipo(&T);
-		DeclaracaoLocal();
+		TIPO(&T);
+		DECLARACAO_LOCAL(T);
 	}
 }
-/*----------------------------------------------------*/
-/* Bloco = '{' [ DeclaracoesLocais ] [ Comandos ] '}' */
-/*----------------------------------------------------*/
-PRIVATE void Bloco()
+/*-----------------------------------------------------*/
+/* BLOCO = '{' [ DECLARACOES_LOCAIS ] [ COMANDOS ] '}' */
+/*-----------------------------------------------------*/
+PRIVATE void BLOCO()
 {
   	if (Token=='{')
   	{
     		Token=ObterToken(Lexema);
-    		DeclaracoesLocais();
-    		Comandos();
+    		DECLARACOES_LOCAIS();
+    		COMANDOS();
     		if (Token=='}')
     		{
       			Token=ObterToken(Lexema);
@@ -683,9 +598,9 @@ PRIVATE void Bloco()
   	} 
 }
 /*-----------------------------------*/
-/* Parametro = [ '*' ] IDENTIFICADOR */
+/* PARAMETRO = [ '*' ] IDENTIFICADOR */
 /*-----------------------------------*/
-PRIVATE void Parametro(int Tipo, int NP)
+PRIVATE void PARAMETRO(int Tipo, int NP)
 {
 	if (Token=='*')
 	{
@@ -701,22 +616,22 @@ PRIVATE void Parametro(int Tipo, int NP)
 		Abortar(1);
 	}
 }
-/*----------------------------------------*/
-/* DeclaracaoDeParametro = Tipo Parametro */
-/*----------------------------------------*/
-PRIVATE void DeclaracaoDeParametro(int NP)
+/*------------------------------------------*/
+/* DECLARACAO_DE_PARAMETRO = TIPO PARAMETRO */
+/*------------------------------------------*/
+PRIVATE void DECLARACAO_DE_PARAMETRO(int NP)
 {
-	int T;
+	int T; // tipo
 
-	Tipo(&T);
-	Parametro(T, NP);
+	TIPO(&T);
+	PARAMETRO(T, NP);
 }
-/*-------------------------------------------------------------------------------*/
-/* DeclaracoesDeParametros = DeclaracaoDeParametro { ',' DeclaracaoDeParametro } */
-/*-------------------------------------------------------------------------------*/
-PRIVATE void DeclaracoesDeParametros(int *NP)
+/*-------------------------------------------------------------------------------------*/
+/* DECLARACOES_DE_PARAMETROS = DECLARACAO_DE_PARAMETRO { ',' DECLARACAO_DE_PARAMETRO } */
+/*-------------------------------------------------------------------------------------*/
+PRIVATE void DECLARACOES_DE_PARAMETROS(int *NP)
 {
-	*NP = 0;
+	*NP = 0; // numero de parametros inicializado com 0
 	if (Token==')')
 	{
 		/* sem parametros */
@@ -724,19 +639,19 @@ PRIVATE void DeclaracoesDeParametros(int *NP)
 	else
 	{
 		*NP = *NP + 1;
-		DeclaracaoDeParametro(*NP);
+		DECLARACAO_DE_PARAMETRO(*NP);
 		while (Token==',')
 		{
 			Token=ObterToken(Lexema);
 			*NP = *NP + 1;
-			DeclaracaoDeParametro(*NP);
+			DECLARACAO_DE_PARAMETRO(*NP);
 		}
 	}
 }
-/*-------------------------------------------------------------*/
-/* VariavelGlobal = [ '*' ] Identificador [ ListaDeDimensões ] */
-/*-------------------------------------------------------------*/
-PRIVATE void VariavelGlobal(char *Id)
+/*----------------------------------------------------------------*/
+/* VARIAVEL_GLOBAL = [ '*' ] Identificador [ LISTA_DE_DIMENSOES ] */
+/*----------------------------------------------------------------*/
+PRIVATE void VARIAVEL_GLOBAL(char *Id)
 {
 	if (Token=='*')
 	{
@@ -748,7 +663,7 @@ PRIVATE void VariavelGlobal(char *Id)
     		Token=ObterToken(Lexema);
 		if (Token=='[')
 		{
-			ListaDeDimensoes();
+			LISTA_DE_DIMENSOES();
 		}
   	}
   	else
@@ -756,17 +671,17 @@ PRIVATE void VariavelGlobal(char *Id)
     		Abortar(1);
   	}
 }
-/*-------------------------------------------------------------------------------------------------------------------*/
-/* DeclaracaoGlobal = Tipo VariavelGlobal ( { ',' VariavelGlobal } ';' | '(' [ DeclaracoesDeParametros ] ')' Bloco ) */
-/*-------------------------------------------------------------------------------------------------------------------*/
-PRIVATE void DeclaracaoGlobal()
+/*------------------------------------------------------------------------------------------------------------------------*/
+/* DECLARACAO_GLOBAL = TIPO VARIAVEL_GLOBAL ( { ',' VARIAVEL_GLOBAL } ';' | '(' [ DECLARACOES_DE_PARAMETROS ] ')' BLOCO ) */
+/*------------------------------------------------------------------------------------------------------------------------*/
+PRIVATE void DECLARACAO_GLOBAL()
 {
-	char Id[TAM_LEXEMA + 1];
-	int  T; 
-	int  NP; // N. de parametros (se função)
+	char Id[TAM_LEXEMA + 1]; // identificador
+	int  T;                  // tipo  
+	int  NP;                 // N. de parametros (se Id for função)
 
-	Tipo(&T);
-  	VariavelGlobal(Id);
+	TIPO(&T);
+  	VARIAVEL_GLOBAL(Id);
 	switch(Token)
 	{
 		case ';': 	IniciarSegmentoDeDados();
@@ -778,7 +693,7 @@ PRIVATE void DeclaracaoGlobal()
 				while (Token==',') 
     			   	{
       					Token=ObterToken(Lexema);
-      					VariavelGlobal(Id);
+      					VARIAVEL_GLOBAL(Id);
 					DefinirVariavelGlobal(Id, T);
     				}
     				if (Token==';')
@@ -794,12 +709,12 @@ PRIVATE void DeclaracaoGlobal()
 				DefinirNomeDaSubRotina(Id);
 				IniciarSubRotina(Id);
 				Token=ObterToken(Lexema);
-    				DeclaracoesDeParametros(&NP);
+    				DECLARACOES_DE_PARAMETROS(&NP);
 				DefinirSubRotina(ObterNomeDaSubRotina(), T, NP);
     				if (Token==')')
     				{
       					Token=ObterToken(Lexema);
-      					Bloco();
+      					BLOCO();
 					TerminarSubRotina(Id);
     				}
 				else
@@ -810,25 +725,24 @@ PRIVATE void DeclaracaoGlobal()
 		default :	Abortar(3);
 	}
 }
-/*------------------------------------------------------------*/
-/* DeclaracoesGlobais = DeclaracaoGlobal { DeclaracaoGlobal } */
-/*------------------------------------------------------------*/
-PRIVATE void DeclaracoesGlobais()
+/*---------------------------------------------------------------*/
+/* DECLARACOES_GLOBAIS = DECLARACAO_GLOBAL { DECLARACAO_GLOBAL } */
+/*---------------------------------------------------------------*/
+PRIVATE void DECLARACOES_GLOBAIS()
 {
-  	DeclaracaoGlobal();
+	DECLARACAO_GLOBAL();
   	while ((Token==INT) || (Token==CHAR))
   	{
-    		DeclaracaoGlobal();
+		DECLARACAO_GLOBAL();
   	} 
-	//Listar();
 }
-/*-------------------------------------------*/
-/* Modulo = [ Inclusoes ] DeclaracoesGlobais */
-/*-------------------------------------------*/
-PRIVATE void Modulo()
+/*--------------------------------------------*/
+/* MODULO = [ INCLUSOES ] DECLARACOES_GLOBAIS */
+/*--------------------------------------------*/
+PRIVATE void MODULO()
 {
   	/* Inclusoes(); */
-  	DeclaracoesGlobais();
+	DECLARACOES_GLOBAIS();
 }
 /*-------------------------------------------------*/
 /* Associar um analisador sintatico com um arquivo */
@@ -840,7 +754,7 @@ PUBLIC void IniciarAnalisadorSintatico(char *NomeFonte, char *NomeMonta)
   	IniciarAnalisadorSemantico(NomeMonta);
 
   	Token=ObterToken(Lexema);
-  	Modulo();
+  	MODULO();
 	if (Token==FIM_ARQ)
 	{	
 		TerminarMontagem("main");

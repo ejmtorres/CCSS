@@ -1,7 +1,8 @@
 int func(int a, int b)
 {
-	a=2*(3/4-1);
+	return a+b;
 }
 int main()
 {
+	return func(1,2);
 }
