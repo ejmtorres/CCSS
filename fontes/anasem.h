@@ -172,7 +172,7 @@ PUBLIC void AjustarParametros(int N);
 /*---------------------------*/
 /* gerar armazenamento local */
 /*---------------------------*/
-PUBLIC void DefinirVariavelLocal(long *N);
+PUBLIC void DefinirVariavelLocal(char *Id, int Tipo, int N);
 /*----------------------------*/
 /* iniciar programa principal */
 /*----------------------------*/

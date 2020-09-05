@@ -517,7 +517,7 @@ PRIVATE void LISTA_DE_DIMENSOES()
 /*---------------------------------------------------------------*/
 /* VARIAVEL_LOCAL = [ '*' ] IDENTIFICADOR [ LISTA_DE_DIMENSOES ] */
 /*---------------------------------------------------------------*/
-PRIVATE void VARIAVEL_LOCAL(int Tipo)
+PRIVATE void VARIAVEL_LOCAL(int T, int N)
 {
 	if (Token=='*')
 	{
@@ -525,6 +525,7 @@ PRIVATE void VARIAVEL_LOCAL(int Tipo)
 	}
 	if (Token==IDENTIF)
   	{
+        	DefinirVariavelLocal(Lexema, T, N);
     		Token=ObterToken(Lexema);
 		if (Token=='[')
 		{
@@ -543,13 +544,13 @@ PRIVATE void VARIAVEL_LOCAL(int Tipo)
 /*----------------------------------------------------------*/
 /* DECLARACAO_LOCAL = VARIAVEL_LOCAL { ',' VARIAVEL_LOCAL } */
 /*----------------------------------------------------------*/
-PRIVATE void DECLARACAO_LOCAL(int T)
+PRIVATE void DECLARACAO_LOCAL(int T, int N)
 {
-	VARIAVEL_LOCAL(T);
+	VARIAVEL_LOCAL(T, N);
 	while (Token==',')
 	{
 		Token=ObterToken(Lexema);
-		VARIAVEL_LOCAL(T);
+		VARIAVEL_LOCAL(T, N++);
 	}
 	if (Token==';')
 	{
@@ -566,11 +567,13 @@ PRIVATE void DECLARACAO_LOCAL(int T)
 PRIVATE void DECLARACOES_LOCAIS()
 {
 	int T; // tipo
+    	int N; // numero de variaveis locais em cada declaracao local
 
 	while ((Token==INT) || (Token==CHAR))
 	{
+		N = 1;
 		TIPO(&T);
-		DECLARACAO_LOCAL(T);
+		DECLARACAO_LOCAL(T, N);
 	}
 }
 /*-----------------------------------------------------*/

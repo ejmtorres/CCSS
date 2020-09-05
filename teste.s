@@ -6,6 +6,8 @@ _func:
                                 movl  8(%ebp), %ebx
                                 movl  12(%ebp), %ecx
                                 addl  %ecx, %ebx
+                                movl  %ebx, -4(%ebp)
+                                movl  -4(%ebp), %ebx
                                 movl  %ebx, %eax
                                 movl  %ebp, %esp
                                 popl  %ebp

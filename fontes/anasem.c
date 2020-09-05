@@ -55,7 +55,7 @@ PRIVATE void Abortar(int N)
     		case 13 : strcpy(Mensagem, "Tipo do Parametro Invalido");  break;
     		case 14 : strcpy(Mensagem, "Sem Memoria");                 break;
   	}
-  	printf("Linha %d ==> %s!\n", ObterLinha(), Mensagem);
+  	printf("Erro %02d: Linha %d ==> %s!\n", N, ObterLinha(), Mensagem);
   	exit(N);
 }
 /*-----------------------------------------------*/
@@ -91,7 +91,7 @@ PUBLIC char *ObterNomeDoTipo()
 /*---------------------------*/
 PRIVATE int Procurar(char *Id)
 {
-  	register int  Ind;
+  	int  Ind;
 
   	for (Ind=TopoTab-1; Ind>=0; Ind--)
     		if (! strcmp(Tabela[Ind]->Nome, Id)) return Ind;
@@ -102,8 +102,8 @@ PRIVATE int Procurar(char *Id)
 /*-------------------------------------*/
 PRIVATE void Inserir(char *Id, int Cat, int Niv, long Desl, int Tipo)
 {
-  	register TSimbolo *PtrTopoTab;
-  	register int       Indice;
+  	TSimbolo *PtrTopoTab;
+  	int       Indice;
 
   	Indice = Procurar(Id);
   	if (Indice != -1)
@@ -178,7 +178,7 @@ PRIVATE int ObterRotulo()
 /*------------------------------------------------*/
 PUBLIC void SalvarRegistradores(int *T)
 {
-  	register int I;
+  	int I;
 
   	*T = TopoReg;
   	for (I=0; I<TopoReg; I++)
@@ -190,7 +190,7 @@ PUBLIC void SalvarRegistradores(int *T)
 /*----------------------------------------------------*/
 PUBLIC void RecuperarRegistradores(int *R, int T)
 {
-  	register int I;
+  	int I;
 	
   	TopoReg = T;
   	*R      = AlocarRegistrador();
@@ -204,7 +204,7 @@ PUBLIC void RecuperarRegistradores(int *R, int T)
 /*-----------------------------------------------*/
 PUBLIC void IniciarAnalisadorSemantico(char *NomeAsm)
 {
-  	register int Ind;
+  	int Ind;
 
   	if ((ArqMonta = fopen(NomeAsm, "w")) == (FILE *)0)
   	{
@@ -234,7 +234,7 @@ PRIVATE void Remover(int Niv)
 PUBLIC void DefinirN_ezimaDimensao(char *Id, char *D)
 {
   	/* D = tamanho da N-esima dimensao */
-  	register TSimbolo *PtrTopoTab;
+  	TSimbolo *PtrTopoTab;
 
   	if (TopoTab < TAM_TABELA)
   	{
@@ -266,8 +266,8 @@ PUBLIC void DefinirTipoBase(int T, int NDim)
 /*-----------------------------------*/
 PUBLIC int ObterTipo(char *Id)
 {
-	register int T; /* entrada de Id */
-  	register int C; /* categoria de Id */
+	int T; /* entrada de Id */
+  	int C; /* categoria de Id */
 
   	T = Procurar(Id);
   	if (T == -1) Abortar(3);    /* nao foi declarado */
@@ -282,8 +282,8 @@ PUBLIC int ObterTipo(char *Id)
 /*---------------------------------------*/
 PRIVATE int ObterNumeroDeDimensoes(char *Id)
 {
-  	register int Pos;
-  	register int NumDim;
+  	int Pos;
+  	int NumDim;
 
   	Pos = Procurar(Id);
   	Pos = Tabela[Pos]->Tipo;
@@ -301,7 +301,7 @@ PRIVATE int ObterNumeroDeDimensoes(char *Id)
 /*-------------------------------------*/
 PUBLIC int ObterCategoria(char *Id)
 {
-  	register int Ind;
+  	int Ind;
 
   	if ((Ind = Procurar(Id)) == -1) return NADA;
   	else                            return Tabela[Ind]->Categ;
@@ -354,9 +354,9 @@ PUBLIC void TerminarMontagem(char *Inicio)
     		fprintf(ArqMonta, ".global _start\n");
     		fprintf(ArqMonta, "_start:\n");
     		fprintf(ArqMonta, " %30s call  _%s\n", BRANCO, Inicio);
-		fprintf(ArqMonta, " %30s movl  $0, %%ebx\n", BRANCO);
-  		fprintf(ArqMonta, " %30s movl  $1, %%eax\n", BRANCO);
-  		fprintf(ArqMonta, " %30s int   $0x80\n",     BRANCO);
+		fprintf(ArqMonta, " %30s movl  %%eax, %%ebx\n", BRANCO);
+  		fprintf(ArqMonta, " %30s movl  $1, %%eax\n",    BRANCO);
+  		fprintf(ArqMonta, " %30s int   $0x80\n",        BRANCO);
 	}
   	Remover(NGLOBAL);
 }
@@ -452,33 +452,29 @@ PUBLIC void DefinirVariavelGlobal(char *Id, int Tipo)
 /*--------------------------------------------*/
 /* definir e gerar codigo para variavel local */
 /*--------------------------------------------*/
-PUBLIC void DefinirVariavelLocal(long *N)
+PUBLIC void DefinirVariavelLocal(char *Id, int T, int N)
 {
-	int Tipo=INT;
-    	char Id[TAM_LEXEMA + 1];
-
-    	if (Tipo == INT)
+    	if (T == INT)
     	{
-      		Inserir(Id, CVARL, NLOCAL, DeslocLocal+NB_INTEIRO, INT);
+      		Inserir(Id, CVARL, NLOCAL, N*NB_INTEIRO, INT);
       		EspacoLocal += NB_INTEIRO;
       		DeslocLocal += NB_INTEIRO;
-      		*N          += NB_INTEIRO;
     	}
-    	else
-    	if (Tipo == CADEIA)
-    	{
-      		Inserir(Id, CVARL, NLOCAL, DeslocLocal+NB_CADEIA+1, CADEIA);
-      		EspacoLocal += NB_CADEIA+1;
-      		DeslocLocal += NB_CADEIA+1;
-      		*N          += NB_CADEIA+1;
-    	}
-    	else /* variavel local estruturada */
-    	{
-      		*N = DefinirVariavelLocalVetor(Tipo);
-      		Inserir(Id, CVETL, NLOCAL, DeslocLocal+(*N), Tipo);
-      		EspacoLocal += *N;
-      		DeslocLocal += *N;
-    	}
+    	//else
+    	//if (Tipo == CADEIA)
+    	//{
+      	//	Inserir(Id, CVARL, NLOCAL, DeslocLocal+NB_CADEIA+1, CADEIA);
+      	//	EspacoLocal += NB_CADEIA+1;
+      	//	DeslocLocal += NB_CADEIA+1;
+      	//	*N          += NB_CADEIA+1;
+    	//}
+    	//else /* variavel local estruturada */
+    	//{
+      	//	*N = DefinirVariavelLocalVetor(Tipo);
+      	//	Inserir(Id, CVETL, NLOCAL, DeslocLocal+(*N), Tipo);
+      	//	EspacoLocal += *N;
+      	//	DeslocLocal += *N;
+    	//}
    	if (EspacoLocal > TAM_PILHA)  Abortar(7);
 }
 /*----------------------------------------*/
@@ -503,9 +499,9 @@ PUBLIC void DefinirParametro(char *Id, int Tipo, int NP)
 /*-----------------------------------------*/
 PUBLIC void AjustarParametros(int N)
 {
-  	register int T;   /* primeiro parametro na tabela */
-  	register int Ind; /* indice da tabela */
-  	register int Nb;  /* numero de bytes */
+  	int T;   /* primeiro parametro na tabela */
+  	int Ind; /* indice da tabela */
+  	int Nb;  /* numero de bytes */
   	long D;  /* deslocamento inicial dos parametros */
 
   	T  = TopoTab - 1;
@@ -535,26 +531,6 @@ PUBLIC void GerarVariavelLocal(long N)
     		fprintf(ArqMonta, " %30s subl  $%ld, %%esp\n", BRANCO, N);
   	}
 }
-/*----------------------------*/
-/* iniciar programa principal */
-/*----------------------------*/
-//PUBLIC void IniciarPrograma(char *Id)
-//{
-//  	fprintf(ArqMonta, "\n.global _%s\n", Id);
-//  	fprintf(ArqMonta, "_%s:\n",        Id);
-//}
-/*-----------------------------*/
-/* terminar programa principal */
-/*-----------------------------*/
-//PUBLIC void TerminarPrograma(char *Id)
-//{
-//	if (Procurar(Id) != -1)
-//	{
-//		fprintf(ArqMonta, " %30s movl  $0, %%ebx\n", BRANCO);
-// 		fprintf(ArqMonta, " %30s movl  $1, %%eax\n", BRANCO);
-//  		fprintf(ArqMonta, " %30s int   $0x80\n",     BRANCO);
-//	}
-//}
 /*----------------------*/
 /* iniciar sub-rotina   */
 /*----------------------*/
@@ -606,7 +582,7 @@ PUBLIC void TerminarBloco()
 /*-------------------------------------*/
 PUBLIC void AjustarTipoDaFuncao(char *NomeFunc, int TipoRet)
 {
-	register int Indice;
+	int Indice;
 
   	Indice = Procurar(NomeFunc);
   	if (Indice != -1)
@@ -618,7 +594,7 @@ PUBLIC void AjustarTipoDaFuncao(char *NomeFunc, int TipoRet)
 /*--------------------------*/
 PUBLIC void IniciarFuncao(int *NA, int *NB, int *TA)
 {
-  	register int I;
+  	int I;
 
   	*NA = 0;       /* inicializa numero de argumentos */
   	*NB = 0;       /* inicializa numero de bytes empilhado */
@@ -632,9 +608,9 @@ PUBLIC void IniciarFuncao(int *NA, int *NB, int *TA)
 /*---------------------------*/
 PUBLIC void TerminarFuncao(int *R, int *T, int NA, int NB, int TA, char *Id)
 {
-	register int NP;  /* numero de parametros */
-  	register int Ind; /* indice na tabela */
-  	register int I;
+	int NP;  /* numero de parametros */
+  	int Ind; /* indice na tabela */
+  	int I;
 
   	if ((Ind = Procurar(Id)) == -1)
   	{
@@ -662,7 +638,7 @@ PUBLIC void TerminarFuncao(int *R, int *T, int NA, int NB, int TA, char *Id)
 PUBLIC void IniciarFatorVetor(int  *NI, int *TA, int *R, int *T, int *P,
                               char *Id)
 {
-  	register int I;
+  	int I;
 
   	*P = Tabela[Procurar(Id)]->Tipo; /* encontra entrada do tipo do vetor */
   	*T = Tabela[*P]->Tipo;           /* encontra tipo base do vetor */
@@ -679,11 +655,11 @@ PUBLIC void IniciarFatorVetor(int  *NI, int *TA, int *R, int *T, int *P,
 /*----------------------*/
 PUBLIC void TerminarFatorVetor(int NI, int TA, int R, char *Id)
 {
-  	register int ND;  /* numero de dimensoes */
-  	register int I;
-  	register int Pos;
-  	register int Niv;
-  	register int Tip;
+  	int ND;  /* numero de dimensoes */
+  	int I;
+  	int Pos;
+  	int Niv;
+  	int Tip;
   	long         Des;
 
   	ND = ObterNumeroDeDimensoes(Id);
@@ -746,10 +722,10 @@ PUBLIC void IniciarAtribuicaoVetor(int *NI, int *T, int *P, char *Id)
 /*------------------------------*/
 PUBLIC void TerminarAtribuicaoVetor(int NI, char *Id)
 {
-  	register int ND;  /* numero de dimensoes */
-  	register int Pos;
-  	register int Niv;
-  	register int Tip;
+  	int ND;  /* numero de dimensoes */
+  	int Pos;
+  	int Niv;
+  	int Tip;
   	long         Des;
 
   	ND = ObterNumeroDeDimensoes(Id);
@@ -870,17 +846,17 @@ PUBLIC void GerarIndiceN(int D)
   	fprintf(ArqMonta, " %30s mull  %%ecx\n",       BRANCO);
   	DesalocarRegistrador();
   	fprintf(ArqMonta, " %30s addl  %%ebx, %%eax\n", BRANCO);
- 	 DesalocarRegistrador();
+ 	DesalocarRegistrador();
 }
 /*----------------------------------*/
 /* gerar expressao do tipo endereco */
 /*----------------------------------*/
 PUBLIC void GerarEndereco(char *Id, int *T)
 {
-  	register int Ind;  /* indice da tab. de simb. */
-  	register int Catg; /* categoria */
-  	register int Nivl; /* nivel */
-  	register int Tipo; /* tipo */
+  	int Ind;  /* indice da tab. de simb. */
+  	int Catg; /* categoria */
+  	int Nivl; /* nivel */
+  	int Tipo; /* tipo */
   	long         Desl; /* deslocamento */
 
   	if ((Ind = Procurar(Id)) == -1) Abortar(3);
@@ -900,10 +876,10 @@ PUBLIC void GerarEndereco(char *Id, int *T)
 /*--------------------------------*/
 PUBLIC void GerarCadeia(char *Id, int *T)
 {
-	register char *PtrId;
-  	register int   Cont;
-  	register int   Rot1;
-  	register int   Rot2;
+	char *PtrId;
+  	int   Cont;
+  	int   Rot1;
+  	int   Rot2;
 
   	PtrId = Id;
   	Rot1 = ObterRotulo();
@@ -944,9 +920,9 @@ PUBLIC void GerarCadeia(char *Id, int *T)
 /*------------------------------------*/
 PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
 {
-  	register int Ind; /* indice da tab. de simb. */
-  	register int C;   /* categoria */
-  	register int N;   /* nivel */
+  	int Ind; /* indice da tab. de simb. */
+  	int C;   /* categoria */
+  	int N;   /* nivel */
   	long         D;   /* deslocamento */
 
   	//C = CVAR;
@@ -969,6 +945,7 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
       			C  = Tabela[Ind]->Categ;
     		}
     		if ((C != CVARG) &&
+		    (C != CVARL) &&
                     (C != CPAR)) Abortar(6);
     		/* variavel global */
     		if (N == NGLOBAL)
@@ -1007,9 +984,9 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
 /*--------------------------*/
 PUBLIC void GerarFatorValor(int *R, int *T, char *Id)
 {
-  	register int Ind; /* indice na tabela */
-  	register int N;   /* nivel */
-  	register int C;   /* categoria */
+  	int Ind; /* indice na tabela */
+  	int N;   /* nivel */
+  	int C;   /* categoria */
   	long         D;   /* deslocamento */
 
 }
@@ -1025,10 +1002,10 @@ PUBLIC void GerarMenos(int M, int R)
 /*------------------------------------------------------------*/
 PUBLIC void GerarValor(int T, char *Id)
 {
-  	register int Ind;  /* indice na tabela */
-  	register int Niv;  /* nivel */
-  	register int Cat;  /* categoria */
-  	register int TId;  /* tipo do Id */
+  	int Ind;  /* indice na tabela */
+  	int Niv;  /* nivel */
+  	int Cat;  /* categoria */
+  	int TId;  /* tipo do Id */
   	long         Desl; /* deslocamento */
 
   	Niv  = NGLOBAL;
@@ -1050,10 +1027,10 @@ PUBLIC void GerarValor(int T, char *Id)
 /*------------------------------*/
 PUBLIC void GerarAtribuicao(char *Id, int T)
 {
-	register int Ind;
-  	register int Tipo;
-  	register int Catg;
-  	register int Nivl;
+	int Ind;
+  	int Tipo;
+  	int Catg;
+  	int Nivl;
   	long         Desl;
 
   	Tipo = INT;
@@ -1127,9 +1104,9 @@ PUBLIC void GerarAtribuicao(char *Id, int T)
 /*------------------------------*/
 PUBLIC void GerarAtribuicaoVetor(char *Id, int T)
 {
-  	register int Ind;
-  	register int Tipo;
-  	register int Catg;
+  	int Ind;
+  	int Tipo;
+  	int Catg;
 
   	Tipo = INT;
   	//Catg = CVAR;	  
@@ -1165,9 +1142,9 @@ PUBLIC void GerarAtribuicaoVetor(char *Id, int T)
 /*-------------------------------*/
 PUBLIC void GerarChamada(char *Id, int NA, int NB)
 {
-	register int Ind; /* indice na tabela */
-  	register int Cat; /* categoria */
-  	register int NP;  /* numero de parametros */
+	int Ind; /* indice na tabela */
+  	int Cat; /* categoria */
+  	int NP;  /* numero de parametros */
 
   	if ((Ind = Procurar(Id)) == -1)
   	{
