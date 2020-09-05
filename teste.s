@@ -4,10 +4,6 @@ _func:
                                 pushl %ebp
                                 movl  %esp, %ebp
                                 movl  8(%ebp), %ebx
-                                movl  12(%ebp), %ecx
-                                addl  %ecx, %ebx
-                                movl  %ebx, -4(%ebp)
-                                movl  -4(%ebp), %ebx
                                 movl  %ebx, %eax
                                 movl  %ebp, %esp
                                 popl  %ebp
@@ -17,12 +13,10 @@ _func:
 _main:
                                 pushl %ebp
                                 movl  %esp, %ebp
-                                movl  $1, %ebx
-                                pushl %ebx
-                                movl  $2, %ebx
+                                movl  $'A', %ebx
                                 pushl %ebx
                                 call  _func
-                                addl  $8, %esp
+                                addl  $1, %esp
                                 movl  %eax, %ebx
                                 movl  %ebx, %eax
                                 movl  %ebp, %esp

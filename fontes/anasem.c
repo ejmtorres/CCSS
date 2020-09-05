@@ -55,7 +55,7 @@ PRIVATE void Abortar(int N)
     		case 13 : strcpy(Mensagem, "Tipo do Parametro Invalido");  break;
     		case 14 : strcpy(Mensagem, "Sem Memoria");                 break;
   	}
-  	printf("Erro %02d: Linha %d ==> %s!\n", N, ObterLinha(), Mensagem);
+  	printf("Erro semântico (%02d): Linha %d ==> %s!\n", N, ObterLinha(), Mensagem);
   	exit(N);
 }
 /*-----------------------------------------------*/
@@ -441,7 +441,7 @@ PUBLIC void DefinirVariavelGlobal(char *Id, int Tipo)
       		fprintf(ArqMonta, ".global _%s\n", Id);
       		fprintf(ArqMonta, "_%s:\n", Id);
       		fprintf(ArqMonta, ".byte 0\n");
-      		EspacoGlobal += NB_CHAR;
+      		EspacoGlobal += NB_CARACTERE;
     	}
     	else /* variavel global estruturada */
     	{
@@ -457,6 +457,12 @@ PUBLIC void DefinirVariavelLocal(char *Id, int T, int N)
     	if (T == INT)
     	{
       		Inserir(Id, CVARL, NLOCAL, N*NB_INTEIRO, INT);
+      		EspacoLocal += NB_INTEIRO;
+      		DeslocLocal += NB_INTEIRO;
+    	}
+    	if (T == CHAR)
+    	{
+      		Inserir(Id, CVARL, NLOCAL, N*NB_INTEIRO, CHAR);
       		EspacoLocal += NB_INTEIRO;
       		DeslocLocal += NB_INTEIRO;
     	}
@@ -486,49 +492,14 @@ PUBLIC void DefinirParametro(char *Id, int Tipo, int NP)
   	{
     		Inserir(Id, CPAR, NLOCAL, DESL_INIC + (NP - 1)*NB_INTEIRO, INT);
     		EspacoLocal += NB_INTEIRO;
+		DeslocLocal += NB_INTEIRO;
   	}
   	else
   	if (Tipo == CHAR)
   	{
     		Inserir(Id, CPAR, NLOCAL, DESL_INIC + (NP - 1)*NB_INTEIRO, CHAR);
     		EspacoLocal += NB_INTEIRO; // mesmo sendo char deve ser tratado com int na pilha
-  	}
-}
-/*-----------------------------------------*/
-/* ajustar os deslocamentos dos parametros */
-/*-----------------------------------------*/
-PUBLIC void AjustarParametros(int N)
-{
-  	int T;   /* primeiro parametro na tabela */
-  	int Ind; /* indice da tabela */
-  	int Nb;  /* numero de bytes */
-  	long D;  /* deslocamento inicial dos parametros */
-
-  	T  = TopoTab - 1;
-  	Nb = NB_INTEIRO;
-  	D  = DESL_INIC;
-  	for (Ind=1; Ind<=N; Ind++) /* N = numero de parametros */
-  	{
-    		Tabela[T]->Desl = D;
-    		switch(Tabela[T]->Tipo)
-    		{
-      			case INT      : Nb = NB_INTEIRO;  break;
-      			case CADEIA   : Nb = NB_PONTEIRO; break;
-    		}
-    		D += Nb;
-    		T--;
-  	}
-  	Tabela[T]->Tipo = N; /* num. de par. colocado no proc correspondente */
-  	DeslocLocal = 0;
-}
-/*---------------------------*/
-/* gerar armazenamento local */
-/*---------------------------*/
-PUBLIC void GerarVariavelLocal(long N)
-{
-  	if (Nivel == NLOCAL) 
-  	{
-    		fprintf(ArqMonta, " %30s subl  $%ld, %%esp\n", BRANCO, N);
+      		DeslocLocal += NB_INTEIRO;
   	}
 }
 /*----------------------*/
@@ -558,7 +529,6 @@ PUBLIC void DefinirSubRotina(char *Id, int Tipo, int NP)
   	DefinirNivel(NLOCAL);
   	EspacoLocal = 0;
 }
-
 /*---------------*/
 /* iniciar bloco */
 /*---------------*/
@@ -934,6 +904,13 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
     		*T = INT;
     		fprintf(ArqMonta, " %30s movl  $%s, %s\n", BRANCO, Id, Reg32[*R]);
   	}
+	else
+  	if (Tk == CARACT)
+  	{
+    		*T = CHAR;
+    		fprintf(ArqMonta, " %30s movl  $%s, %s\n", BRANCO, Id, Reg32[*R]);
+  	}
+	else
   	if (Tk == IDENTIF)
   	{
     		if ((Ind = Procurar(Id)) == -1) Abortar(3);
@@ -953,6 +930,9 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
       			if (*T == INT)
         			fprintf(ArqMonta, " %30s movl  _%s, %s\n", BRANCO, Id, Reg32[*R]);
       			else
+			if (*T == CHAR)
+        			fprintf(ArqMonta, " %30s movl  _%s, %s\n", BRANCO, Id, Reg32[*R]);
+			else
       			if (*T == CADEIA)
         			fprintf(ArqMonta, " %30s leal  _%s, %s\n",  BRANCO, Id, Reg32[*R]);
     		}
@@ -964,6 +944,9 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
         			if (*T == INT)
           				fprintf(ArqMonta, " %30s movl  -%ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
         			else
+				if (*T == CHAR)
+          				fprintf(ArqMonta, " %30s movl  -%ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
+				else
         			if (*T == CADEIA)
           				fprintf(ArqMonta, " %30s leal  -%ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
       			}
@@ -973,6 +956,9 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
         			if (*T == INT)
           				fprintf(ArqMonta, " %30s movl  %ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
         			else
+				if (*T == CHAR)
+          				fprintf(ArqMonta, " %30s movl  %ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
+				else
         			if (*T == CADEIA)
           				fprintf(ArqMonta, " %30s movl  %ld(%%ebp), %s\n", BRANCO, D, Reg32[*R]);
       			}
@@ -982,14 +968,14 @@ PUBLIC void GerarFator(int *R, int  *T, int Tk, char *Id)
 /*--------------------------*/
 /* gerar Fator -> valor(Id) */
 /*--------------------------*/
-PUBLIC void GerarFatorValor(int *R, int *T, char *Id)
-{
-  	int Ind; /* indice na tabela */
-  	int N;   /* nivel */
-  	int C;   /* categoria */
-  	long         D;   /* deslocamento */
-
-}
+//PUBLIC void GerarFatorValor(int *R, int *T, char *Id)
+//{
+//  	int Ind; /* indice na tabela */
+//  	int N;   /* nivel */
+//  	int C;   /* categoria */
+//  	long         D;   /* deslocamento */
+//
+//}
 /*----------------------*/
 /* gerar sinal de menos */
 /*----------------------*/
@@ -1048,13 +1034,16 @@ PUBLIC void GerarAtribuicao(char *Id, int T)
   	if ((Catg != CVARL) &&
             (Catg != CVARG) &&
             (Catg != CPAR)) Abortar(6);
-  	if (Tipo != T)      Abortar(4);
+  	if (Tipo != T) Abortar(4);
   	/* variavel global */
   	if (Nivl == NGLOBAL)
   	{
     		if (Tipo == INT)
       			fprintf(ArqMonta, " %30s movl  %%ebx, _%s\n", BRANCO, Id);
     		else
+    		if (Tipo == CHAR)
+      			fprintf(ArqMonta, " %30s movl  %%ebx, _%s\n", BRANCO, Id);
+		else
     		if (Tipo == CADEIA)
     		{
       			fprintf(ArqMonta, " %30s leal  _%s, %%ecx\n", BRANCO, Id);
@@ -1072,6 +1061,9 @@ PUBLIC void GerarAtribuicao(char *Id, int T)
       			if (Tipo == INT)
         			fprintf(ArqMonta, " %30s movl  %%ebx, -%ld(%%ebp)\n", BRANCO, Desl);
       			else
+      			if (Tipo == CHAR)
+        			fprintf(ArqMonta, " %30s movl  %%ebx, -%ld(%%ebp)\n", BRANCO, Desl);
+			else
       			if (Tipo == CADEIA)
       			{
         			fprintf(ArqMonta, " %30s leal  -%ld(%%ebp), %%ecx\n", BRANCO, Desl);
@@ -1087,6 +1079,9 @@ PUBLIC void GerarAtribuicao(char *Id, int T)
       			if (Tipo == INT)
         			fprintf(ArqMonta, " %30s movl  %%ebx, %ld(%%ebp)\n", BRANCO, Desl);
       			else
+      			if (Tipo == CHAR)
+        			fprintf(ArqMonta, " %30s movl  %%ebx, %ld(%%ebp)\n", BRANCO, Desl);
+			else
       			if (Tipo == CADEIA)
       			{
         			fprintf(ArqMonta, " %30s movl  -%ld(%%ebp), %%ecx\n", BRANCO, Desl);
@@ -1122,6 +1117,12 @@ PUBLIC void GerarAtribuicaoVetor(char *Id, int T)
   	if (Tipo != T)    Abortar(4);
   	fprintf(ArqMonta, " %30s popl  %%eax\n", BRANCO);
   	if (Tipo == INT)
+  	{
+    		fprintf(ArqMonta, " %30s xchgl %%ebx, %%eax\n",   BRANCO);
+    		fprintf(ArqMonta, " %30s movl  %%eax, (%%ebx)\n", BRANCO);
+  	}
+  	else
+  	if (Tipo == CHAR)
   	{
     		fprintf(ArqMonta, " %30s xchgl %%ebx, %%eax\n",   BRANCO);
     		fprintf(ArqMonta, " %30s movl  %%eax, (%%ebx)\n", BRANCO);

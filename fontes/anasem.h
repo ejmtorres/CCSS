@@ -50,10 +50,10 @@
 #define NGLOBAL 0
 #define NLOCAL  1
 /* numero de bytes para ...*/
-#define NB_CHAR     1
-#define NB_INTEIRO  4
-#define NB_PONTEIRO 4
-#define NB_CADEIA   128
+#define NB_CARACTERE 1
+#define NB_INTEIRO   4
+#define NB_PONTEIRO  4
+#define NB_CADEIA    128
 /* alinhamento para vetores */
 #define ALIN_INT 4
 #define ALIN_PON 4

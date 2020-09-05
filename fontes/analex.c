@@ -141,6 +141,13 @@ PUBLIC int ObterToken(char *Lexema)
                  				Estado = 6;
                				}
                				else
+					if (Caract == '\'')
+					{
+						Lexema[IndLex++] = Caract;
+						Caract           = ObterCaractere();
+						Estado           = 9;
+					}
+					else
                				if (isalpha(Caract))
                				{
                  				Lexema[IndLex++] = Caract;
@@ -240,6 +247,26 @@ PUBLIC int ObterToken(char *Lexema)
 					else
 					{
 						Estado = 7;
+					}
+					break;
+			case 9 :	if (Caract == FIM_ARQ) return ERROLEX;
+					else
+					{
+						Lexema[IndLex++] = Caract;
+						Caract           = ObterCaractere();
+						Estado           = 10;
+					}
+					break;
+			case 10:	if (Caract == '\'')
+					{
+						Lexema[IndLex++] = Caract;
+						Lexema[IndLex]   = '\0';
+						Caract           = ObterCaractere();
+						return CARACT;
+					}
+					else
+					{
+						return ERROLEX;
 					}
 					break;
     }

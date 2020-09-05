@@ -133,6 +133,7 @@ PRIVATE void FATOR(int *R, int *T)
                    		/* funcao declarada ou externa */
                    		if ((Cat == CFUNC)||(Cat == NADA))
                    		{
+					printf("Passou por aqui com Lexema=<%s>\n", Lexema);
                      			strcpy(Alvo, Lexema);
                      			Token = ObterToken(Lexema);
                      			IniciarFuncao(&NA, &NB, &TA);
@@ -355,7 +356,6 @@ PRIVATE void COMANDO_DE_CHAMADA(char *Alvo)
   	int  NA;             /* numero de argumentos */
   	int  NB;             /* numero de bytes empilhados */
 
-	printf("Passou por aqui, COMANDO_DE_CHAMADA, com Lexema=<%s>\n", Lexema);
   	NA = 0;
   	NB = 0;
   	Token = ObterToken(Lexema);

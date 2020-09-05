@@ -1,12 +1,8 @@
-int func(int a, int b)
+int func(char c)
 {
-	int v1;
-
-	v1=a+b;
-
-	return v1;
+	return c;
 }
 int main()
 {
-	return func(1, 2);
+	return func('A');
 }
